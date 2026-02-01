@@ -1,10 +1,245 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Free Fire Guild Glory Bot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>FF Guild Glory Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; color: white; }
+        .selection-orange::selection { background: #f97316; color: white; }
+    </style>
 </head>
-<body>
-  <h1>Website Live Ho Gayi 🎉</h1>
-  <p>Agar ye page dikh raha hai to GitHub Pages sahi kaam kar raha hai.</p>
+<body class="selection-orange pb-20">
+
+    <audio id="clickSound" src="https://cdn.freesound.org/previews/256/256116_3263906-lq.mp3"></audio>
+    <audio id="successSound" src="https://cdn.freesound.org/previews/171/171671_2437358-lq.mp3"></audio>
+    <audio id="errorSound" src="https://cdn.freesound.org/previews/142/142608_2437358-lq.mp3"></audio>
+
+    <header class="fixed top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md">
+        <div class="mx-auto flex h-16 max-w-md items-center justify-between px-4">
+            <div class="flex items-center gap-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500 font-bold text-black">FF</div>
+                <span class="text-lg font-bold tracking-tight">Glory Bot</span>
+            </div>
+            <div class="text-xs font-medium text-orange-400 bg-orange-400/10 px-2 py-1 rounded-full">v2.4 Live</div>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-md px-4 pt-24">
+        <div id="step1">
+            <div class="mb-6 text-center">
+                <h1 class="text-2xl font-bold">Select Package</h1>
+                <p class="text-neutral-400">Choose the glory boost that fits your guild.</p>
+            </div>
+
+            <div class="space-y-4" id="packageList">
+                <div onclick="selectPkg('low', 149, 'Low Quality', 'from-blue-500 to-cyan-400')" id="pkg-low" class="pkg-card relative cursor-pointer overflow-hidden rounded-xl border-2 border-neutral-800 bg-neutral-900/50 p-5 transition-all active:scale-95">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg">
+                            <i data-lucide="shield" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold">Low Quality</h3>
+                            <div class="mt-1 flex gap-2 text-sm font-medium">
+                                <span class="text-orange-400">2 Bots</span><span>•</span><span class="text-blue-400">150k Glory</span>
+                            </div>
+                            <div class="mt-1 text-xs text-neutral-500">Time: 3 Hours</div>
+                        </div>
+                        <span class="text-xl font-bold">₹149</span>
+                    </div>
+                </div>
+
+                <div onclick="selectPkg('premium', 449, 'Premium Quality', 'from-purple-500 to-pink-500')" id="pkg-premium" class="pkg-card relative cursor-pointer overflow-hidden rounded-xl border-2 border-neutral-800 bg-neutral-900/50 p-5 transition-all active:scale-95">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
+                            <i data-lucide="zap" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold">Premium Quality</h3>
+                            <div class="mt-1 flex gap-2 text-sm font-medium">
+                                <span class="text-orange-400">4 Bots</span><span>•</span><span class="text-blue-400">350k Glory</span>
+                            </div>
+                            <div class="mt-1 text-xs text-neutral-500">Time: 5 Hours</div>
+                        </div>
+                        <span class="text-xl font-bold">₹449</span>
+                    </div>
+                </div>
+
+                <div onclick="selectPkg('legend', 999, 'Legend Quality', 'from-yellow-500 to-orange-500')" id="pkg-legend" class="pkg-card relative cursor-pointer overflow-hidden rounded-xl border-2 border-neutral-800 bg-neutral-900/50 p-5 transition-all active:scale-95">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-500 to-orange-500 shadow-lg">
+                            <i data-lucide="crown" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold">Legend Quality</h3>
+                            <div class="mt-1 flex gap-2 text-sm font-medium">
+                                <span class="text-orange-400">6 Bots</span><span>•</span><span class="text-blue-400">700k-900k Glory</span>
+                            </div>
+                            <div class="mt-1 text-xs text-neutral-500">Time: 1 Day</div>
+                        </div>
+                        <span class="text-xl font-bold">₹999</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixed bottom-0 left-0 w-full border-t border-white/10 bg-black p-4">
+                <div class="mx-auto max-w-md">
+                    <button id="nextBtn" disabled onclick="goNext()" class="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 py-3.5 text-lg font-bold text-black transition-transform active:scale-95 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed">
+                        Next Step <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step2" class="hidden animate-in slide-in-from-right-8 duration-300 pb-8">
+            <button onclick="goBack()" class="mb-4 flex items-center text-sm font-medium text-neutral-400 hover:text-white">
+                <i data-lucide="arrow-left" class="mr-1 w-4 h-4"></i> Back to packages
+            </button>
+
+            <div class="mb-6 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-neutral-400">Selected Package</span>
+                    <span id="displayPkgTitle" class="font-bold text-orange-500">Package Name</span>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-sm">
+                    <span class="text-neutral-500">Total Price</span>
+                    <span id="displayPkgPrice" class="text-xl font-bold text-white">₹0</span>
+                </div>
+            </div>
+
+            <form id="paymentForm" class="space-y-6">
+                <div class="rounded-xl border border-neutral-800 bg-neutral-900 p-6 text-center">
+                    <p id="qrText" class="mb-4 text-sm font-medium text-orange-400">Scan to Pay</p>
+                    <div class="mx-auto w-48 overflow-hidden rounded-lg border-4 border-white p-1 bg-white">
+                        <img src="https://i.ibb.co/3WCCrVL/426004928-1839516629853965-643537243916057077-n.jpg" alt="Payment QR" class="h-full w-full object-contain">
+                    </div>
+                    <p class="mt-4 text-xs text-neutral-500">UPI / GPay / PhonePe / Paytm</p>
+                </div>
+
+                <div id="errorMessage" class="hidden flex items-center gap-2 rounded-lg bg-red-500/10 p-3 text-red-500 border border-red-500/20">
+                    <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
+                    <p class="font-medium">Wrong information</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-neutral-300">UTR / Transaction ID (12 Digits)</label>
+                        <input type="number" id="utrInput" required placeholder="Enter 12 digit UTR" class="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-neutral-300">Clan ID</label>
+                        <input type="text" id="clanIdInput" required placeholder="Enter your Clan ID" class="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-neutral-300">Server</label>
+                        <select id="serverInput" class="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
+                            <option>India</option>
+                            <option>Bangladesh</option>
+                            <option>Pakistan</option>
+                            <option>Indonesia</option>
+                            <option>Brazil</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-neutral-300">WhatsApp Number</label>
+                        <input type="tel" id="whatsappInput" required placeholder="e.g. +91 98765 43210" class="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full rounded-xl bg-orange-500 py-4 text-lg font-bold text-black transition-transform active:scale-95 disabled:bg-neutral-800">
+                    Submit Order
+                </button>
+            </form>
+        </div>
+
+        <div id="successScreen" class="hidden flex flex-col items-center justify-center py-20 text-center">
+            <div class="h-20 w-20 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-lg">
+                <i data-lucide="check" class="w-10 h-10 text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold mb-2">Success!</h2>
+            <p class="text-green-400 text-lg font-medium">Submitted successfully</p>
+            <p class="text-neutral-500 mt-2 max-w-xs">Your order has been received. We will contact you on WhatsApp shortly.</p>
+            <button onclick="location.reload()" class="mt-8 rounded-lg bg-neutral-800 px-6 py-2 text-sm font-medium text-white">Place Another Order</button>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        let selectedPackage = null;
+
+        function playSound(id) {
+            const sound = document.getElementById(id);
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(() => {});
+            }
+        }
+
+        function selectPkg(id, price, title, colorClass) {
+            playSound('clickSound');
+            selectedPackage = { id, price, title };
+            
+            // UI Update
+            document.querySelectorAll('.pkg-card').forEach(el => {
+                el.classList.remove('border-orange-500', 'bg-neutral-900');
+                el.classList.add('border-neutral-800', 'bg-neutral-900/50');
+            });
+            
+            const activeCard = document.getElementById('pkg-' + id);
+            activeCard.classList.add('border-orange-500', 'bg-neutral-900');
+            activeCard.classList.remove('border-neutral-800');
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function goNext() {
+            playSound('clickSound');
+            if (selectedPackage) {
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('displayPkgTitle').innerText = selectedPackage.title;
+                document.getElementById('displayPkgPrice').innerText = '₹' + selectedPackage.price;
+                document.getElementById('qrText').innerText = 'Scan to Pay ₹' + selectedPackage.price;
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function goBack() {
+            playSound('clickSound');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        }
+
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            playSound('clickSound');
+            
+            const btn = document.getElementById('submitBtn');
+            const utr = document.getElementById('utrInput').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+
+            btn.disabled = true;
+            btn.innerText = 'Verifying...';
+
+            setTimeout(() => {
+                // UTR Validation (12 Digits)
+                if (utr.length !== 12 || !/^\d+$/.test(utr)) {
+                    btn.disabled = false;
+                    btn.innerText = 'Submit Order';
+                    errorDiv.classList.remove('hidden');
+                    playSound('errorSound');
+                } else {
+                    playSound('successSound');
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('successScreen').classList.remove('hidden');
+                }
+            }, 1500);
+        });
+    </script>
 </body>
 </html>
