@@ -112,12 +112,14 @@
                 </div>
             </div>
 
- 
-            <form id="paymentForm" class="space-y-6">
+            <form action="https://formspree.io/f/mykpjoya" method="POST" id="paymentForm" class="space-y-6">
+                <input type="hidden" name="Package_Name" id="hiddenPkgName">
+                <input type="hidden" name="Price" id="hiddenPrice">
+
                 <div class="rounded-xl border border-neutral-800 bg-neutral-900 p-6 text-center">
                     <p class="mb-4 text-sm font-medium text-orange-400">Scan to Pay</p>
                     <div class="mx-auto w-48 overflow-hidden rounded-lg border-4 border-white p-1 bg-white">
-              <img src="1769917541366.jpg" alt="Payment QR" class="w-full">
+                        <img src="1769917541366.jpg" alt="Payment QR" class="w-full">
                     </div>
                     <p class="mt-4 text-xs text-neutral-500">UPI / GPay / PhonePe / Paytm</p>
                 </div>
@@ -130,15 +132,15 @@
                 <div class="space-y-4 text-left">
                     <div>
                         <label class="text-sm font-medium text-neutral-300">UTR / Transaction ID (12 Digits)</label>
-                        <input type="number" id="utr" required placeholder="Enter 12 digit UTR" class="w-full mt-1 rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
+                        <input type="number" name="UTR_Number" id="utr" required placeholder="Enter 12 digit UTR" class="w-full mt-1 rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
                     </div>
                     <div>
                         <label class="text-sm font-medium text-neutral-300">Clan ID</label>
-                        <input type="text" id="clanId" required placeholder="Enter your Clan ID" class="w-full mt-1 rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
+                        <input type="text" name="Clan_ID" id="clanId" required placeholder="Enter your Clan ID" class="w-full mt-1 rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
                     </div>
                     <div>
                         <label class="text-sm font-medium text-neutral-300">WhatsApp Number</label>
-                        <input type="tel" id="whatsapp" required placeholder="+91 00000 00000" class="w-full mt-1 rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
+                        <input type="tel" name="WhatsApp" id="whatsapp" required placeholder="+91 00000 00000" class="w-full mt-1 rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-white focus:border-orange-500 outline-none">
                     </div>
                 </div>
 
@@ -153,7 +155,7 @@
                 <i class="fas fa-check text-3xl text-white"></i>
             </div>
             <h2 class="text-3xl font-bold mb-2">Success!</h2>
-            <p class="text-green-400 text-lg font-medium text-sm">Submitted successfully</p>
+            <p class="text-green-400 text-lg font-medium">Submitted successfully</p>
             <p class="text-neutral-500 mt-2 max-w-xs text-sm">
                 Your order has been received. We will contact you on WhatsApp shortly.
             </p>
@@ -172,7 +174,6 @@
             selectedPkgPrice = price;
             selectedPkgName = name;
             
-            // UI update for selection
             document.querySelectorAll('.package-card').forEach(card => {
                 card.classList.remove('border-orange-500', 'bg-neutral-900');
                 card.classList.add('border-neutral-800', 'bg-neutral-900/50');
@@ -193,6 +194,11 @@
             document.getElementById('step2').classList.remove('hidden');
             document.getElementById('displayPkgName').innerText = selectedPkgName;
             document.getElementById('displayPrice').innerText = '₹' + selectedPkgPrice;
+            
+            // Notification details set kar rahe hain
+            document.getElementById('hiddenPkgName').value = selectedPkgName;
+            document.getElementById('hiddenPrice').value = '₹' + selectedPkgPrice;
+            
             window.scrollTo(0, 0);
         }
 
@@ -201,24 +207,42 @@
             document.getElementById('step1').classList.remove('hidden');
         }
 
-        document.getElementById('paymentForm').onsubmit = function(e) {
+        document.getElementById('paymentForm').onsubmit = async function(e) {
             e.preventDefault();
             const utr = document.getElementById('utr').value;
             const submitBtn = document.getElementById('submitBtn');
             const errorMsg = document.getElementById('errorMessage');
 
-            submitBtn.innerText = "Verifying...";
-            errorMsg.classList.add('hidden');
+            if (utr.length !== 12) {
+                errorMsg.classList.remove('hidden');
+                return;
+            }
 
-            setTimeout(() => {
-                if (utr.length !== 12) {
-                    errorMsg.classList.remove('hidden');
-                    submitBtn.innerText = "Submit Order";
-                } else {
+            submitBtn.innerText = "Sending Request...";
+            submitBtn.disabled = true;
+
+            // Formspree API call
+            const formData = new FormData(this);
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
                     document.getElementById('step2').classList.add('hidden');
                     document.getElementById('step3').classList.remove('hidden');
+                } else {
+                    alert("Something went wrong. Please try again.");
+                    submitBtn.innerText = "Submit Order";
+                    submitBtn.disabled = false;
                 }
-            }, 1500);
+            } catch (error) {
+                alert("Network error!");
+                submitBtn.innerText = "Submit Order";
+                submitBtn.disabled = false;
+            }
         };
     </script>
 </body>
